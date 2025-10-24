@@ -5,7 +5,7 @@ This project predicts whether a road accident is **low/moderate (0)** or **sever
 The pipeline includes **EDA, feature engineering, PCA, SMOTE balancing, model tuning, threshold optimization, and SHAP explainability**.
 
 **Objectives**:
-- Identify key factors contributing to accident severity.
+- Identify key factors (mainly weather-focused factors) contributing to accident severity.
 - Improve recall for severe accidents.
 - Provide interpretable predictions for traffic safety planning.
 
@@ -16,7 +16,7 @@ The pipeline includes **EDA, feature engineering, PCA, SMOTE balancing, model tu
 | Category | Tools |
 |----------|-------|
 | Programming | Python 3.9+, Jupyter Notebook |
-| Libraries | Pandas, NumPy, Scikit-learn, Imbalanced-learn, XGBoost, SHAP, Matplotlib, Seaborn |
+| Libraries | Pandas, NumPy, Scikit-learn, Imbalanced-learn, XGBoost, SHAP |
 | Techniques | EDA, Feature Engineering, PCA, Outlier Removal (IQR), SMOTE, Ensemble Learning, Hyperparameter Tuning |
 | Visualization | Seaborn, Matplotlib |
 | Explainability | SHAP (bar and beeswarm plots), Feature Importance |
@@ -24,8 +24,7 @@ The pipeline includes **EDA, feature engineering, PCA, SMOTE balancing, model tu
 ---
 
 ## Dataset
-
-- **Source:** [US_Accidents](https://www.kaggle.com/sobhanmoosavi/us-accidents)  
+- **Size:** 3 GB  
 - **Sample Size:** 1,000,000 records  
 - **Target Encoding:**  
   - Severity 1 & 2 → 0 (Low/Moderate)  
@@ -33,8 +32,8 @@ The pipeline includes **EDA, feature engineering, PCA, SMOTE balancing, model tu
 
 **Features Used:**
 - Location: `Start_Lat`, `Start_Lng`, `End_Lat`, `End_Lng`  
-- Temporal: `Start_Time`, `End_Time`, twilight indicators  
-- Weather: `Temperature(F)`, `Pressure(in)`, `Humidity(%)`, `Wind_Speed(mph)`  
+- Temporal: `Start_Time`, `End_Time`
+- Weather: `Temperature(F)`, `Pressure(in)`, `Humidity(%)`, `Wind_Speed(mph)`, `Visibility(mi)`, `Precipitation(in)`, `Weather_Condition`
 - Traffic: `Traffic_Signal`, `Crossing`, `Junction`
 
 ---
@@ -75,7 +74,7 @@ The pipeline includes **EDA, feature engineering, PCA, SMOTE balancing, model tu
 - Severe accidents are the minority class (~20%).  
 - XGBoost (Tuned) achieved the highest PR-AUC (0.64).  
 - Threshold tuning (τ=0.35) improved severe class recall from 52% → 69%.  
-- Most important predictive features: Latitude, Longitude, Pressure, Temperature, Humidity, Wind Chill.
+- Most important predictive features: Latitude, Longitude, Temperature, Wind Chill.
 
 ---
 
@@ -93,12 +92,12 @@ The pipeline includes **EDA, feature engineering, PCA, SMOTE balancing, model tu
 ## Threshold Optimization
 
 - Evaluated precision, recall, and F1 score across multiple thresholds.  
-- Selected **τ = 0.35** for best balance between recall of severe accidents and overall precision.
+- Selected **τ = 0.35** for the best balance between recall of severe accidents and overall precision.
 
 ---
 
 ## Explainability
 
-- SHAP plots indicate higher temperature, pressure, and humidity increase severity probability.  
+- SHAP plots indicate higher temperature increases severity probability.  
 - Specific geographic regions (latitude/longitude clusters) are higher risk.  
 - Traffic signals and crossings help reduce severity risk.
