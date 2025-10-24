@@ -56,9 +56,8 @@ The pipeline includes **EDA, feature engineering, PCA, SMOTE balancing, model tu
    - Performed hyperparameter tuning with GridSearchCV on XGBoost.
 
 5. **Evaluation**
-   - Metrics: Accuracy, F1, Precision-Recall (PR-AUC)
+   - Metrics: Accuracy, F1-Score, Precision-Recall (PR-AUC)
    - Threshold tuning to improve recall of severe accidents.
-   - Model interpretation with SHAP plots.
 
 ---
 
@@ -71,33 +70,57 @@ The pipeline includes **EDA, feature engineering, PCA, SMOTE balancing, model tu
 | XGBoost (Base) | 0.84 | 0.57 | 0.62 |
 | XGBoost (Tuned) | 0.85 | 0.58 | 0.64 |
 
-- Severe accidents are the minority class (~20%).  
-- XGBoost (Tuned) achieved the highest PR-AUC (0.64).  
-- Threshold tuning (τ=0.35) improved severe class recall from 52% → 69%.  
-- Most important predictive features: Latitude, Longitude, Temperature, Wind Chill.
+**XGBoost (Tuned)** achieved the **highest PR-AUC (0.64)** and the best balance between recall and precision.  
+After **threshold tuning (τ = 0.35)**, **recall improved from 52% → 69%**, helping identify more severe cases.
+
+<img width="784" height="384" alt="output_37_2" src="https://github.com/user-attachments/assets/851fdd14-1abc-47fa-b61c-64ac65033e64" />
 
 ---
 
-## Visualizations
+## Threshold Optimization  
 
-- Severity Distribution  
-- Correlation Heatmap  
-- Top 20 Feature Importances (Random Forest)  
-- SHAP Summary Plot  
-- Precision-Recall Curves (All Models)  
-- Confusion Matrix (τ = 0.35)
-
----
-
-## Threshold Optimization
-
-- Evaluated precision, recall, and F1 score across multiple thresholds.  
-- Selected **τ = 0.35** for the best balance between recall of severe accidents and overall precision.
+- **Goal:** Improve recall of severe accidents without too many false alarms.  
+- Best performance at **τ = 0.35**:  
+  - Precision ≈ 0.54  
+  - Recall ≈ 0.69  
+  - F1 ≈ 0.60  
 
 ---
 
-## Explainability
+## Confusion Matrices  
 
-- SHAP plots indicate higher temperature increases severity probability.  
-- Specific geographic regions (latitude/longitude clusters) are higher risk.  
-- Traffic signals and crossings help reduce severity risk.
+**Default (Threshold = 0.5)**  
+<img width="330" height="257" alt="output_37_4" src="https://github.com/user-attachments/assets/05f4e230-4a20-48ef-b97d-67affe44c4a6" />
+
+**Optimized (Threshold = 0.35)**  
+<img width="330" height="257" alt="output_40_1" src="https://github.com/user-attachments/assets/4b50c761-c666-4645-b463-cf9d350842fc" />
+
+The tuned threshold increases detection of severe accidents (**True Positives**) while slightly raising false positives.  
+This is acceptable because **missing severe cases is more critical** than issuing false alerts.
+
+---
+
+## Why Lower Recall Isn’t Always Bad  
+
+Although recall can be pushed higher, **very high recall (>80%)** drastically lowers **precision**, causing too many false alarms.  
+In a real-world traffic system, over-predicting severity wastes emergency resources.  
+
+**Balanced recall (~69%)** ensures a **realistic, actionable model**.  
+
+---
+
+## Model Explainability (SHAP Analysis)  
+
+**Feature Importance**  
+<img width="784" height="384" alt="output_27_0" src="https://github.com/user-attachments/assets/bb0640e9-0493-4f69-b9fd-7bee80534593" />
+
+**SHAP Summary (Impact by Value)**  
+<img width="562" height="734" alt="output_31_0" src="https://github.com/user-attachments/assets/a4f9fef3-4921-46ed-9718-7b4df9744f8f" />  
+<img width="584" height="734" alt="output_30_0" src="https://github.com/user-attachments/assets/216e16da-3149-4d13-beba-4a9b7b56dcb9" />
+
+### Key Insights  
+- **Temperature (F)**, **Latitude/Longitude**, and **Wind Chill (F)** are top predictors.  
+- **Higher temperatures** slightly increase accident severity probability.  
+- **Specific location clusters** (by Start_Lat/Start_Lng) correspond to historically severe regions.  
+- **Traffic signals** and **crossings** correlate with **lower severity**, indicating safer zones.  
+- **Wind speed** and **distance** also contribute — long, windy roads tend to increase risk.
