@@ -1,4 +1,4 @@
-# Car Accident Severity Prediction (2025)
+# Car Accident Severity Prediction
 
 ## Overview
 This project predicts whether a road accident is **low/moderate (0)** or **severe (1)** using U.S. traffic data (2016–2023).  
