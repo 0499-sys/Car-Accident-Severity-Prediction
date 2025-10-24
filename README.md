@@ -1,123 +1,104 @@
-# 🚗 Car Accident Severity Prediction (2025)
+# Car Accident Severity Prediction (2025)
 
-> Machine Learning pipeline predicting the **severity of road accidents** using 1M+ U.S. traffic records.  
-> Combines **EDA, feature engineering, PCA compression, SMOTE balancing, model tuning, and SHAP explainability**.
+## Overview
+This project predicts whether a road accident is **low/moderate (0)** or **severe (1)** using U.S. traffic data (2016–2023).  
+The pipeline includes **EDA, feature engineering, PCA, SMOTE balancing, model tuning, threshold optimization, and SHAP explainability**.
 
----
-
-## 🧠 Project Overview
-
-This project predicts whether an accident is **mild/moderate (0)** or **severe (1)** using weather, time, and location data.  
-It uses the **US_Accidents** dataset (2016–2023) and delivers interpretable, production-ready results through model comparison, hyperparameter optimization, and threshold tuning.
-
-**Objectives**
-- Identify key factors that contribute to accident severity.  
-- Improve recall for severe cases using threshold tuning.  
-- Provide interpretable model outputs for safety & traffic planning.
+**Objectives**:
+- Identify key factors contributing to accident severity.
+- Improve recall for severe accidents.
+- Provide interpretable predictions for traffic safety planning.
 
 ---
 
-## ⚙️ Tech Stack
+## Tech Stack
 
 | Category | Tools |
-|-----------|-------|
-| **Programming** | Python 3.9+, Jupyter Notebook |
-| **Libraries** | Pandas, NumPy, Scikit-learn, Imbalanced-learn, XGBoost, SHAP, Matplotlib, Seaborn |
-| **Techniques** | EDA, Feature Engineering, PCA, Outlier Removal (IQR), SMOTE, Ensemble Learning, Model Tuning |
-| **Visualization** | Seaborn, Matplotlib |
-| **Explainability** | SHAP (bar + beeswarm), Feature Importance |
+|----------|-------|
+| Programming | Python 3.9+, Jupyter Notebook |
+| Libraries | Pandas, NumPy, Scikit-learn, Imbalanced-learn, XGBoost, SHAP, Matplotlib, Seaborn |
+| Techniques | EDA, Feature Engineering, PCA, Outlier Removal (IQR), SMOTE, Ensemble Learning, Hyperparameter Tuning |
+| Visualization | Seaborn, Matplotlib |
+| Explainability | SHAP (bar and beeswarm plots), Feature Importance |
 
 ---
 
-## 📂 Dataset
+## Dataset
 
-- **Source:** [US_Accidents (Kaggle / Open Data)](https://www.kaggle.com/sobhanmoosavi/us-accidents)
-- **Records Used:** 1,000,000 stratified samples  
+- **Source:** [US_Accidents](https://www.kaggle.com/sobhanmoosavi/us-accidents)  
+- **Sample Size:** 1,000,000 records  
 - **Target Encoding:**  
-  `Severity 1 & 2 → 0 (Low/Moderate)`  
-  `Severity 3 & 4 → 1 (Severe)`  
+  - Severity 1 & 2 → 0 (Low/Moderate)  
+  - Severity 3 & 4 → 1 (Severe)  
 
-**Selected Features**
+**Features Used:**
 - Location: `Start_Lat`, `Start_Lng`, `End_Lat`, `End_Lng`  
-- Temporal: `Start_Time`, `End_Time`, Twilight Indicators  
+- Temporal: `Start_Time`, `End_Time`, twilight indicators  
 - Weather: `Temperature(F)`, `Pressure(in)`, `Humidity(%)`, `Wind_Speed(mph)`  
-- Traffic Indicators: `Traffic_Signal`, `Crossing`, `Junction`
+- Traffic: `Traffic_Signal`, `Crossing`, `Junction`
 
 ---
 
-## 🧩 Methodology
+## Methodology
 
-1. **Exploratory Data Analysis (EDA)**  
-   - Visualized severity distribution and feature histograms  
-   - Removed outliers using IQR across numeric columns  
+1. **Exploratory Data Analysis (EDA)**
+   - Visualized severity distribution and feature histograms.
+   - Removed outliers using IQR.
 
-2. **Feature Engineering**  
-   - Extracted hour of day, day/night features  
-   - Encoded wind and weather conditions → **PCA(13)** for dimensionality reduction  
+2. **Feature Engineering**
+   - Extracted hour of day, day/night, and weather-related features.
+   - Applied PCA for dimensionality reduction on categorical/weather features.
 
-3. **Data Balancing**  
-   - Applied **SMOTE** on training data to handle imbalance  
+3. **Data Balancing**
+   - Used SMOTE to handle class imbalance in training data.
 
-4. **Model Training**  
-   - Compared Logistic Regression, Random Forest, and XGBoost  
-   - Tuned XGBoost hyperparameters using `GridSearchCV`  
+4. **Model Training and Tuning**
+   - Compared Logistic Regression, Random Forest, and XGBoost.
+   - Performed hyperparameter tuning with GridSearchCV on XGBoost.
 
-5. **Evaluation**  
-   - Metrics: Accuracy, F1, Precision-Recall Curve (PR-AUC)  
-   - Threshold tuning to improve recall for severe cases  
-   - Model interpretation using SHAP  
+5. **Evaluation**
+   - Metrics: Accuracy, F1, Precision-Recall (PR-AUC)
+   - Threshold tuning to improve recall of severe accidents.
+   - Model interpretation with SHAP plots.
 
 ---
 
-## 📊 Results Overview
+## Results
 
 | Model | Accuracy | F1 (Severe=1) | PR-AUC |
-|:------|:---------:|:-------------:|:------:|
+|-------|---------|----------------|--------|
 | Logistic Regression | 0.64 | 0.46 | 0.35 |
 | Random Forest | 0.83 | 0.56 | 0.57 |
 | XGBoost (Base) | 0.84 | 0.57 | 0.62 |
-| **XGBoost (Tuned)** | **0.85** | **0.58** | **0.64** |
+| XGBoost (Tuned) | 0.85 | 0.58 | 0.64 |
 
-**Key Insights**
-- Most accidents are of **Severity 2 (≈80%)**, leading to class imbalance.  
-- After balancing, the tuned XGBoost achieved the **best PR-AUC (0.64)**.  
-- **Threshold tuning (τ=0.35)** improved recall of severe cases from 52% → 69%.  
-- **Top predictive factors:** Latitude, Longitude, Pressure, Temperature, Humidity, and Wind Chill.
-
----
-
-## 📈 Visual Results
-
-### Severity Distribution
-![Severity Distribution](docs/severity_proportions.png)
-
-### Correlation Heatmap
-![Correlation Heatmap](docs/corr_heatmap.png)
-
-### Top 20 Feature Importances (Random Forest)
-![Feature Importances](docs/rf_feature_importances.png)
-
-### SHAP Summary Plot
-![SHAP Plot](docs/shap_beeswarm.png)
-
-### Precision-Recall Curves (All Models)
-![PR Curves](docs/pr_all_models.png)
-
-### Confusion Matrix (τ = 0.35)
-![Confusion Matrix](docs/cm_xgb_tau035.png)
+- Severe accidents are the minority class (~20%).  
+- XGBoost (Tuned) achieved the highest PR-AUC (0.64).  
+- Threshold tuning (τ=0.35) improved severe class recall from 52% → 69%.  
+- Most important predictive features: Latitude, Longitude, Pressure, Temperature, Humidity, Wind Chill.
 
 ---
 
-## 🧮 Threshold Optimization
-Balancing **precision vs recall** for severe accidents:
+## Visualizations
 
-![Threshold Tuning](docs/threshold_sweep.png)
+- Severity Distribution  
+- Correlation Heatmap  
+- Top 20 Feature Importances (Random Forest)  
+- SHAP Summary Plot  
+- Precision-Recall Curves (All Models)  
+- Confusion Matrix (τ = 0.35)
 
 ---
 
-## 💡 Explainability
+## Threshold Optimization
 
-**SHAP results reveal:**
-- Higher temperatures, pressure, and humidity increase accident severity probability.  
-- Latitude/Longitude clusters represent geographically high-risk regions.  
-- Traffic signals and crossings play a notable preventive role.
+- Evaluated precision, recall, and F1 score across multiple thresholds.  
+- Selected **τ = 0.35** for best balance between recall of severe accidents and overall precision.
+
+---
+
+## Explainability
+
+- SHAP plots indicate higher temperature, pressure, and humidity increase severity probability.  
+- Specific geographic regions (latitude/longitude clusters) are higher risk.  
+- Traffic signals and crossings help reduce severity risk.
